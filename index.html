@@ -1,0 +1,1927 @@
+```html
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Programação da Fundição</title>
+
+    <!-- MODEL VIEWER -->
+    <script type="module"
+        src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js">
+    </script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #111;
+            color: #fff;
+            min-height: 100vh;
+        }
+
+        /* =========================
+           CABEÇALHO
+        ========================= */
+
+        header {
+            background: #181818;
+            border-bottom: 3px solid #ff7a00;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        header h1 {
+            color: #ff7a00;
+            font-size: 30px;
+            margin-bottom: 8px;
+        }
+
+        header p {
+            color: #ccc;
+            font-size: 16px;
+        }
+
+        /* =========================
+           ABAS
+        ========================= */
+
+        .abas {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            padding: 15px;
+            background: #0b0b0b;
+            border-bottom: 1px solid #333;
+        }
+
+        .aba {
+            border: 2px solid #444;
+            background: #1b1b1b;
+            color: #fff;
+            padding: 14px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .aba:hover {
+            border-color: #ff7a00;
+        }
+
+        .aba.ativa {
+            background: #ff7a00;
+            color: #111;
+            border-color: #ff7a00;
+        }
+
+        .conteudo-aba {
+            display: none;
+            padding: 20px;
+        }
+
+        .conteudo-aba.ativa {
+            display: block;
+        }
+
+        /* =========================
+           CORRIDAS
+        ========================= */
+
+        .corrida {
+            background: #181818;
+            border: 1px solid #333;
+            border-left: 6px solid #ff7a00;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.4);
+        }
+
+        .cabecalho-corrida {
+            background: #222;
+            padding: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .cabecalho-corrida h2 {
+            color: #ff7a00;
+            font-size: 24px;
+        }
+
+        .descricao-corrida {
+            color: #ddd;
+            font-size: 15px;
+        }
+
+        .status-corrida {
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-weight: bold;
+            background: #333;
+            color: #fff;
+        }
+
+        .status-aberta {
+            background: #7a4200;
+            color: #fff;
+        }
+
+        .status-producao {
+            background: #145c2b;
+            color: #fff;
+        }
+
+        .status-finalizada {
+            background: #7b1e1e;
+            color: #fff;
+        }
+
+        /* =========================
+           HORÁRIOS
+        ========================= */
+
+        .horarios-corrida {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            padding: 15px;
+            background: #101010;
+        }
+
+        .horario-box {
+            background: #1d1d1d;
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 13px;
+            text-align: center;
+        }
+
+        .horario-box .titulo {
+            color: #aaa;
+            font-size: 13px;
+            margin-bottom: 7px;
+        }
+
+        .horario-box .hora {
+            color: #ff7a00;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        /* =========================
+           TABELA
+        ========================= */
+
+        .tabela-container {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 850px;
+        }
+
+        th {
+            background: #ff7a00;
+            color: #111;
+            padding: 12px 8px;
+            font-size: 13px;
+            text-align: center;
+        }
+
+        td {
+            border-bottom: 1px solid #333;
+            padding: 11px 8px;
+            text-align: center;
+            color: #eee;
+            font-size: 13px;
+        }
+
+        tr:hover td {
+            background: #222;
+        }
+
+        /* =========================
+           TOTAIS
+        ========================= */
+
+        .totais {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            padding: 15px;
+            background: #101010;
+        }
+
+        .total-box {
+            background: #1c1c1c;
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 12px 20px;
+            min-width: 180px;
+        }
+
+        .total-box span {
+            color: #aaa;
+            display: block;
+            font-size: 13px;
+            margin-bottom: 5px;
+        }
+
+        .total-box strong {
+            color: #ff7a00;
+            font-size: 20px;
+        }
+
+        /* =========================
+           BOTÕES
+        ========================= */
+
+        .acoes {
+            display: flex;
+            gap: 10px;
+            padding: 15px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 8px;
+            padding: 12px 20px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            filter: brightness(1.1);
+        }
+
+        .btn-abrir {
+            background: #ff7a00;
+            color: #111;
+        }
+
+        .btn-iniciar {
+            background: #16833c;
+            color: #fff;
+        }
+
+        .btn-finalizar {
+            background: #a82b2b;
+            color: #fff;
+        }
+
+        .btn-modelo {
+            background: #333;
+            color: #fff;
+            border: 1px solid #ff7a00;
+        }
+
+        /* =========================
+           MOLDACAO
+        ========================= */
+
+        .topo-moldacao {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .topo-moldacao h2 {
+            color: #ff7a00;
+            font-size: 25px;
+        }
+
+        .pesquisa {
+            width: 100%;
+            max-width: 450px;
+            background: #1b1b1b;
+            color: #fff;
+            border: 2px solid #444;
+            border-radius: 10px;
+            padding: 14px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .pesquisa:focus {
+            border-color: #ff7a00;
+        }
+
+        .lista-pecas {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+            gap: 20px;
+        }
+
+        .peca-card {
+            background: #181818;
+            border: 1px solid #333;
+            border-top: 5px solid #ff7a00;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 5px 18px rgba(0,0,0,0.4);
+        }
+
+        .peca-card h3 {
+            color: #ff7a00;
+            margin-bottom: 15px;
+            font-size: 21px;
+        }
+
+        .info-peca {
+            margin-bottom: 8px;
+            color: #ddd;
+        }
+
+        .info-peca strong {
+            color: #fff;
+        }
+
+        .status-moldacao {
+            margin-top: 15px;
+            margin-bottom: 12px;
+            padding: 10px;
+            text-align: center;
+            border-radius: 8px;
+            font-weight: bold;
+            background: #333;
+        }
+
+        .status-moldacao.em {
+            background: #7a4200;
+        }
+
+        .status-moldacao.finalizada {
+            background: #145c2b;
+        }
+
+        .botoes-moldacao {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn-status {
+            flex: 1;
+            min-width: 100px;
+            padding: 10px;
+            border: 1px solid #444;
+            border-radius: 7px;
+            background: #222;
+            color: #fff;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-status:hover {
+            border-color: #ff7a00;
+        }
+
+        .btn-status.ativo {
+            border-color: #ff7a00;
+            background: #ff7a00;
+            color: #111;
+        }
+
+        .sem-resultados {
+            display: none;
+            text-align: center;
+            padding: 40px;
+            color: #aaa;
+        }
+
+        /* =========================
+           MODAL 3D
+        ========================= */
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.88);
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.aberto {
+            display: flex;
+        }
+
+        .modal-conteudo {
+            width: 100%;
+            max-width: 1100px;
+            height: 90vh;
+            background: #181818;
+            border: 2px solid #ff7a00;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .modal-topo {
+            height: 65px;
+            background: #222;
+            border-bottom: 1px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .modal-topo h2 {
+            color: #ff7a00;
+            font-size: 20px;
+        }
+
+        .fechar {
+            background: #a82b2b;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 18px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .informacoes-modelo {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            padding: 12px 20px;
+            background: #111;
+            border-bottom: 1px solid #333;
+            font-size: 14px;
+        }
+
+        .informacoes-modelo span {
+            color: #aaa;
+        }
+
+        .informacoes-modelo strong {
+            color: #fff;
+        }
+
+        model-viewer {
+            width: 100%;
+            height: calc(100% - 115px);
+            background: #222;
+        }
+
+        /* =========================
+           RESPONSIVO
+        ========================= */
+
+        @media (max-width: 700px) {
+
+            header h1 {
+                font-size: 24px;
+            }
+
+            .abas {
+                flex-direction: column;
+            }
+
+            .aba {
+                width: 100%;
+            }
+
+            .horarios-corrida {
+                grid-template-columns: 1fr;
+            }
+
+            .cabecalho-corrida {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .acoes {
+                flex-direction: column;
+            }
+
+            .acoes .btn {
+                width: 100%;
+            }
+
+            .lista-pecas {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-conteudo {
+                height: 95vh;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>🔥 PROGRAMAÇÃO DA FUNDIÇÃO</h1>
+    <p>Controle de produção e moldação</p>
+</header>
+
+
+<!-- =========================
+     ABAS
+========================= -->
+
+<div class="abas">
+
+    <button class="aba ativa" onclick="mostrarAba('programacao', this)">
+        📋 Programação
+    </button>
+
+    <button class="aba" onclick="mostrarAba('moldacao', this)">
+        🧊 Moldação
+    </button>
+
+</div>
+
+
+<!-- ==========================================================
+     ABA PROGRAMAÇÃO
+========================================================== -->
+
+<section id="programacao" class="conteudo-aba ativa">
+
+    <!-- =========================
+         CORRIDA 01
+    ========================= -->
+
+    <div class="corrida">
+
+        <div class="cabecalho-corrida">
+
+            <div>
+                <h2>🔥 CORRIDA 01</h2>
+                <p class="descricao-corrida">
+                    Programação normal
+                </p>
+            </div>
+
+            <div id="status-corrida-01" class="status-corrida">
+                Não iniciada
+            </div>
+
+        </div>
+
+
+        <!-- HORÁRIOS -->
+
+        <div class="horarios-corrida">
+
+            <div class="horario-box">
+                <div class="titulo">HORA DE ABERTURA</div>
+                <div id="hora-abertura-01" class="hora">--:--:--</div>
+            </div>
+
+            <div class="horario-box">
+                <div class="titulo">HORA DE INÍCIO</div>
+                <div id="hora-inicio-01" class="hora">--:--:--</div>
+            </div>
+
+            <div class="horario-box">
+                <div class="titulo">HORA DE FINALIZAÇÃO</div>
+                <div id="hora-finalizacao-01" class="hora">--:--:--</div>
+            </div>
+
+        </div>
+
+
+        <!-- TABELA -->
+
+        <div class="tabela-container">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>CÓDIGO TOTVS</th>
+                        <th>MATERIAL</th>
+                        <th>OP</th>
+                        <th>QUANTIDADE</th>
+                        <th>PESO PEÇA</th>
+                        <th>PESO FEIXE</th>
+                        <th>DESCRIÇÃO</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    <tr>
+                        <td>200103227003</td>
+                        <td>AMN-03</td>
+                        <td>7040-26</td>
+                        <td>1</td>
+                        <td>1810 kg</td>
+                        <td>2300 kg</td>
+                        <td>Mandíbula fixa</td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <!-- TOTAIS -->
+
+        <div class="totais">
+
+            <div class="total-box">
+                <span>PESO TOTAL PEÇAS</span>
+                <strong>1810 kg</strong>
+            </div>
+
+            <div class="total-box">
+                <span>PESO TOTAL FEIXE</span>
+                <strong>2300 kg</strong>
+            </div>
+
+        </div>
+
+
+        <!-- AÇÕES -->
+
+        <div class="acoes">
+
+            <button class="btn btn-abrir"
+                    onclick="abrirCorrida('01')">
+                🔓 ABRIR
+            </button>
+
+            <button class="btn btn-iniciar"
+                    onclick="iniciarCorrida('01')">
+                ▶️ INICIAR
+            </button>
+
+            <button class="btn btn-finalizar"
+                    onclick="finalizarCorrida('01')">
+                ⏹️ FINALIZAR
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         CORRIDA 02
+    ========================= -->
+
+    <div class="corrida">
+
+        <div class="cabecalho-corrida">
+
+            <div>
+                <h2>🔥 CORRIDA 02</h2>
+                <p class="descricao-corrida">
+                    FAZER RECARGA 200 KG
+                </p>
+            </div>
+
+            <div id="status-corrida-02" class="status-corrida">
+                Não iniciada
+            </div>
+
+        </div>
+
+
+        <!-- HORÁRIOS -->
+
+        <div class="horarios-corrida">
+
+            <div class="horario-box">
+                <div class="titulo">HORA DE ABERTURA</div>
+                <div id="hora-abertura-02" class="hora">--:--:--</div>
+            </div>
+
+            <div class="horario-box">
+                <div class="titulo">HORA DE INÍCIO</div>
+                <div id="hora-inicio-02" class="hora">--:--:--</div>
+            </div>
+
+            <div class="horario-box">
+                <div class="titulo">HORA DE FINALIZAÇÃO</div>
+                <div id="hora-finalizacao-02" class="hora">--:--:--</div>
+            </div>
+
+        </div>
+
+
+        <!-- TABELA -->
+
+        <div class="tabela-container">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>CÓDIGO TOTVS</th>
+                        <th>MATERIAL</th>
+                        <th>OP</th>
+                        <th>QUANTIDADE</th>
+                        <th>PESO PEÇA</th>
+                        <th>PESO FEIXE</th>
+                        <th>DESCRIÇÃO</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    <tr>
+                        <td>200118126903</td>
+                        <td>AMN-03</td>
+                        <td>6963-26H</td>
+                        <td>1</td>
+                        <td>610 kg</td>
+                        <td>770 kg</td>
+                        <td>Mandíbula fixa</td>
+                    </tr>
+
+                    <tr>
+                        <td>200118126903</td>
+                        <td>AMN-03</td>
+                        <td>7039-26C2</td>
+                        <td>1</td>
+                        <td>610 kg</td>
+                        <td>770 kg</td>
+                        <td>Mandíbula fixa</td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <!-- TOTAIS -->
+
+        <div class="totais">
+
+            <div class="total-box">
+                <span>PESO TOTAL PEÇAS</span>
+                <strong>1220 kg</strong>
+            </div>
+
+            <div class="total-box">
+                <span>PESO TOTAL FEIXE</span>
+                <strong>1540 kg</strong>
+            </div>
+
+        </div>
+
+
+        <!-- AÇÕES -->
+
+        <div class="acoes">
+
+            <button class="btn btn-abrir"
+                    onclick="abrirCorrida('02')">
+                🔓 ABRIR
+            </button>
+
+            <button class="btn btn-iniciar"
+                    onclick="iniciarCorrida('02')">
+                ▶️ INICIAR
+            </button>
+
+            <button class="btn btn-finalizar"
+                    onclick="finalizarCorrida('02')">
+                ⏹️ FINALIZAR
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ==========================================================
+     ABA MOLDACAO
+========================================================== -->
+
+<section id="moldacao" class="conteudo-aba">
+
+    <div class="topo-moldacao">
+
+        <h2>🧊 CONTROLE DE MOLDACÃO</h2>
+
+        <input
+            type="text"
+            id="pesquisa"
+            class="pesquisa"
+            placeholder="🔎 Pesquisar OP, Código TOTVS ou peça..."
+            onkeyup="pesquisarPeca()"
+        >
+
+    </div>
+
+
+    <div id="lista-pecas" class="lista-pecas">
+
+        <!-- =========================
+             PEÇA 7040-26
+        ========================= -->
+
+        <div class="peca-card"
+             data-op="7040-26"
+             data-totvs="200103227003"
+             data-peca="Mandíbula fixa">
+
+            <h3>Mandíbula fixa</h3>
+
+            <div class="info-peca">
+                <strong>Código TOTVS:</strong>
+                200103227003
+            </div>
+
+            <div class="info-peca">
+                <strong>Código modelo:</strong>
+                7040-26
+            </div>
+
+            <div class="info-peca">
+                <strong>OP:</strong>
+                7040-26
+            </div>
+
+            <div class="info-peca">
+                <strong>Material:</strong>
+                AMN-03
+            </div>
+
+            <div
+                id="status-moldacao-7040-26"
+                class="status-moldacao">
+                Não iniciada
+            </div>
+
+            <div class="botoes-moldacao">
+
+                <button
+                    class="btn-status"
+                    onclick="alterarStatusMoldacao('7040-26','nao')">
+                    Não iniciada
+                </button>
+
+                <button
+                    class="btn-status"
+                    onclick="alterarStatusMoldacao('7040-26','em')">
+                    Em moldação
+                </button>
+
+                <button
+                    class="btn-status"
+                    onclick="alterarStatusMoldacao('7040-26','finalizada')">
+                    Finalizada
+                </button>
+
+            </div>
+
+            <br>
+
+            <button
+                class="btn btn-modelo"
+                onclick="abrirModelo3D(
+                    '7040-26',
+                    '200103227003',
+                    '7040-26',
+                    'Mandíbula fixa',
+                    'AMN-03'
+                )">
+
+                🧱 VER MODELO 3D
+
+            </button>
+
+        </div>
+
+
+        <!-- =========================
+             PEÇA 6963-26H
+        ========================= -->
+
+        <div class="peca-card"
+             data-op="6963-26H"
+             data-totvs="200118126903"
+             data-peca="Mandíbula fixa">
+
+            <h3>Mandíbula fixa</h3>
+
+            <div class="info-peca">
+                <strong>Código TOTVS:</strong>
+                200118126903
+            </div>
+
+            <div class="info-peca">
+                <strong>Código modelo:</strong>
+                6963-26H
+            </div>
+
+            <div class="info-peca">
+                <strong>OP:</strong>
+                6963-26H
+            </div>
+
+            <div class="info-peca">
+                <strong>Material:</strong>
+                AMN-03
+            </div>
+
+            <div
+                id="status-moldacao-6963-26H"
+                class="status-moldacao">
+                Não iniciada
+            </div>
+
+            <div class="botoes-moldacao">
+
+                <button
+                    class="btn-status"
+                    onclick="alterarStatusMoldacao('6963-26H','nao')">
+                    Não iniciada
+                </button>
+
+                <button
+                    class="btn-status"
+                    onclick="alterarStatusMoldacao('6963-26H','em')">
+                    Em moldação
+                </button>
+
+                <button
+                    class="btn-status"
+                    onclick="alterarStatusMoldacao('6963-26H','finalizada')">
+                    Finalizada
+                </button>
+
+            </div>
+
+            <br>
+
+            <button
+                class="btn btn-modelo"
+                onclick="abrirModelo3D(
+                    '6963-26H',
+                    '200118126903',
+                    '6963-26H',
+                    'Mandíbula fixa',
+                    'AMN-03'
+                )">
+
+                🧱 VER MODELO 3D
+
+            </button>
+
+        </div>
+
+
+        <!-- =========================
+             PEÇA 7039-26C2
+        ========================= -->
+
+        <div class="peca-card"
+             data-op="7039-26C2"
+             data-totvs="200118126903"
+             data-peca="Mandíbula fixa">
+
+            <h3>Mandíbula fixa</h3>
+
+            <div class="info-peca">
+                <strong>Código TOTVS:</strong>
+                200118126903
+            </div>
+
+            <div class="info-peca">
+                <strong>Código modelo:</strong>
+                7039-26C2
+            </div>
+
+            <div class="info-peca">
+                <strong>OP:</strong>
+                7039-26C2
+            </div>
+
+            <div class="info-peca">
+                <strong>Material:</strong>
+                AMN-03
+            </div>
+
+            <div
+                id="status-moldacao-7039-26C2"
+                class="status-moldacao">
+                Não iniciada
+            </div>
+
+            <div class="botoes-moldacao">
+
+                <button
+                    class="btn-status"
+                    onclick="alterarStatusMoldacao('7039-26C2','nao')">
+                    Não iniciada
+                </button>
+
+                <button
+                    class="btn-status"
+                    onclick="alterarStatusMoldacao('7039-26C2','em')">
+                    Em moldação
+                </button>
+
+                <button
+                    class="btn-status"
+                    onclick="alterarStatusMoldacao('7039-26C2','finalizada')">
+                    Finalizada
+                </button>
+
+            </div>
+
+            <br>
+
+            <button
+                class="btn btn-modelo"
+                onclick="abrirModelo3D(
+                    '7039-26C2',
+                    '200118126903',
+                    '7039-26C2',
+                    'Mandíbula fixa',
+                    'AMN-03'
+                )">
+
+                🧱 VER MODELO 3D
+
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div id="sem-resultados" class="sem-resultados">
+        Nenhuma peça encontrada.
+    </div>
+
+</section>
+
+
+<!-- ==========================================================
+     MODAL DO MODELO 3D
+========================================================== -->
+
+<div id="modal3D" class="modal">
+
+    <div class="modal-conteudo">
+
+        <div class="modal-topo">
+
+            <h2 id="tituloModelo">
+                Modelo 3D
+            </h2>
+
+            <button
+                class="fechar"
+                onclick="fecharModelo3D()">
+                ✕ FECHAR
+            </button>
+
+        </div>
+
+
+        <div class="informacoes-modelo">
+
+            <div>
+                <span>Código TOTVS:</span>
+                <strong id="modalCodigoTotvs">-</strong>
+            </div>
+
+            <div>
+                <span>OP:</span>
+                <strong id="modalOP">-</strong>
+            </div>
+
+            <div>
+                <span>Peça:</span>
+                <strong id="modalPeca">-</strong>
+            </div>
+
+            <div>
+                <span>Material:</span>
+                <strong id="modalMaterial">-</strong>
+            </div>
+
+        </div>
+
+
+        <model-viewer
+            id="visualizador"
+            camera-controls
+            auto-rotate
+            shadow-intensity="1"
+            exposure="1"
+            environment-image="neutral"
+            interaction-prompt="auto">
+        </model-viewer>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    /* ==========================================================
+       TROCAR ABA
+    ========================================================== */
+
+    function mostrarAba(nome, botao) {
+
+        document.querySelectorAll('.conteudo-aba')
+            .forEach(function(aba) {
+                aba.classList.remove('ativa');
+            });
+
+        document.querySelectorAll('.aba')
+            .forEach(function(aba) {
+                aba.classList.remove('ativa');
+            });
+
+        document.getElementById(nome)
+            .classList.add('ativa');
+
+        botao.classList.add('ativa');
+    }
+
+
+    /* ==========================================================
+       FORMATA HORA
+    ========================================================== */
+
+    function formatarHorario(data) {
+
+        if (!data) {
+            return '--:--:--';
+        }
+
+        return new Date(data).toLocaleTimeString(
+            'pt-BR',
+            {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            }
+        );
+    }
+
+
+    /* ==========================================================
+       PEGA DATA/HORA ATUAL
+    ========================================================== */
+
+    function pegarHora() {
+        return new Date().toISOString();
+    }
+
+
+    /* ==========================================================
+       ATUALIZA STATUS DA CORRIDA
+    ========================================================== */
+
+    function atualizarStatusCorrida(corrida) {
+
+        const abertura =
+            localStorage.getItem(
+                'corrida_' + corrida + '_abertura'
+            );
+
+        const inicio =
+            localStorage.getItem(
+                'corrida_' + corrida + '_inicio'
+            );
+
+        const finalizacao =
+            localStorage.getItem(
+                'corrida_' + corrida + '_finalizacao'
+            );
+
+
+        const status =
+            document.getElementById(
+                'status-corrida-' + corrida
+            );
+
+
+        const horaAbertura =
+            document.getElementById(
+                'hora-abertura-' + corrida
+            );
+
+        const horaInicio =
+            document.getElementById(
+                'hora-inicio-' + corrida
+            );
+
+        const horaFinalizacao =
+            document.getElementById(
+                'hora-finalizacao-' + corrida
+            );
+
+
+        horaAbertura.innerText =
+            formatarHorario(abertura);
+
+        horaInicio.innerText =
+            formatarHorario(inicio);
+
+        horaFinalizacao.innerText =
+            formatarHorario(finalizacao);
+
+
+        status.className = 'status-corrida';
+
+
+        if (finalizacao) {
+
+            status.innerText =
+                '🔴 Corrida finalizada';
+
+            status.classList.add(
+                'status-finalizada'
+            );
+
+        }
+
+        else if (inicio) {
+
+            status.innerText =
+                '🟢 Corrida em produção';
+
+            status.classList.add(
+                'status-producao'
+            );
+
+        }
+
+        else if (abertura) {
+
+            status.innerText =
+                '🟠 Corrida aberta';
+
+            status.classList.add(
+                'status-aberta'
+            );
+
+        }
+
+        else {
+
+            status.innerText =
+                'Não iniciada';
+
+        }
+
+    }
+
+
+    /* ==========================================================
+       ABRIR CORRIDA
+    ========================================================== */
+
+    function abrirCorrida(corrida) {
+
+        const finalizacao =
+            localStorage.getItem(
+                'corrida_' + corrida + '_finalizacao'
+            );
+
+        if (finalizacao) {
+
+            alert(
+                'Essa corrida já foi finalizada.'
+            );
+
+            return;
+        }
+
+
+        const existente =
+            localStorage.getItem(
+                'corrida_' + corrida + '_abertura'
+            );
+
+
+        if (existente) {
+
+            alert(
+                'Essa corrida já foi aberta às ' +
+                formatarHorario(existente)
+            );
+
+            return;
+        }
+
+
+        const agora = pegarHora();
+
+
+        localStorage.setItem(
+            'corrida_' + corrida + '_abertura',
+            agora
+        );
+
+
+        atualizarStatusCorrida(corrida);
+
+
+        alert(
+            'Corrida ' +
+            corrida +
+            ' aberta às ' +
+            formatarHorario(agora)
+        );
+
+    }
+
+
+    /* ==========================================================
+       INICIAR CORRIDA
+    ========================================================== */
+
+    function iniciarCorrida(corrida) {
+
+        const abertura =
+            localStorage.getItem(
+                'corrida_' + corrida + '_abertura'
+            );
+
+        const inicio =
+            localStorage.getItem(
+                'corrida_' + corrida + '_inicio'
+            );
+
+        const finalizacao =
+            localStorage.getItem(
+                'corrida_' + corrida + '_finalizacao'
+            );
+
+
+        if (finalizacao) {
+
+            alert(
+                'Essa corrida já foi finalizada.'
+            );
+
+            return;
+        }
+
+
+        if (!abertura) {
+
+            alert(
+                'Primeiro você precisa ABRIR a corrida.'
+            );
+
+            return;
+        }
+
+
+        if (inicio) {
+
+            alert(
+                'Essa corrida já foi iniciada às ' +
+                formatarHorario(inicio)
+            );
+
+            return;
+        }
+
+
+        const agora = pegarHora();
+
+
+        localStorage.setItem(
+            'corrida_' + corrida + '_inicio',
+            agora
+        );
+
+
+        atualizarStatusCorrida(corrida);
+
+
+        alert(
+            'Corrida ' +
+            corrida +
+            ' iniciada às ' +
+            formatarHorario(agora)
+        );
+
+    }
+
+
+    /* ==========================================================
+       FINALIZAR CORRIDA
+    ========================================================== */
+
+    function finalizarCorrida(corrida) {
+
+        const inicio =
+            localStorage.getItem(
+                'corrida_' + corrida + '_inicio'
+            );
+
+        const finalizacao =
+            localStorage.getItem(
+                'corrida_' + corrida + '_finalizacao'
+            );
+
+
+        if (!inicio) {
+
+            alert(
+                'Primeiro você precisa INICIAR a corrida.'
+            );
+
+            return;
+        }
+
+
+        if (finalizacao) {
+
+            alert(
+                'Essa corrida já foi finalizada às ' +
+                formatarHorario(finalizacao)
+            );
+
+            return;
+        }
+
+
+        if (
+            !confirm(
+                'Deseja realmente finalizar a corrida ' +
+                corrida +
+                '?'
+            )
+        ) {
+
+            return;
+        }
+
+
+        const agora = pegarHora();
+
+
+        localStorage.setItem(
+            'corrida_' + corrida + '_finalizacao',
+            agora
+        );
+
+
+        atualizarStatusCorrida(corrida);
+
+
+        alert(
+            'Corrida ' +
+            corrida +
+            ' finalizada às ' +
+            formatarHorario(agora)
+        );
+
+    }
+
+
+    /* ==========================================================
+       CARREGAR CORRIDAS
+    ========================================================== */
+
+    function carregarCorridas() {
+
+        atualizarStatusCorrida('01');
+        atualizarStatusCorrida('02');
+
+    }
+
+
+    /* ==========================================================
+       STATUS DA MOLDACAO
+    ========================================================== */
+
+    function alterarStatusMoldacao(op, status) {
+
+        localStorage.setItem(
+            'moldacao_' + op,
+            status
+        );
+
+        atualizarStatusVisual(
+            op,
+            status
+        );
+
+    }
+
+
+    /* ==========================================================
+       ATUALIZAR VISUAL DA MOLDACAO
+    ========================================================== */
+
+    function atualizarStatusVisual(op, status) {
+
+        const elemento =
+            document.getElementById(
+                'status-moldacao-' + op
+            );
+
+
+        if (!elemento) {
+            return;
+        }
+
+
+        elemento.className =
+            'status-moldacao';
+
+
+        if (status === 'nao') {
+
+            elemento.innerText =
+                'Não iniciada';
+
+        }
+
+        else if (status === 'em') {
+
+            elemento.innerText =
+                '🟠 Em moldação';
+
+            elemento.classList.add('em');
+
+        }
+
+        else if (status === 'finalizada') {
+
+            elemento.innerText =
+                '🟢 Finalizada';
+
+            elemento.classList.add(
+                'finalizada'
+            );
+
+        }
+
+
+        /* ATUALIZA BOTÕES */
+
+        const card =
+            elemento.closest('.peca-card');
+
+
+        if (!card) {
+            return;
+        }
+
+
+        const botoes =
+            card.querySelectorAll(
+                '.btn-status'
+            );
+
+
+        botoes.forEach(function(botao) {
+
+            botao.classList.remove(
+                'ativo'
+            );
+
+        });
+
+
+        if (status === 'nao') {
+            botoes[0].classList.add('ativo');
+        }
+
+        if (status === 'em') {
+            botoes[1].classList.add('ativo');
+        }
+
+        if (status === 'finalizada') {
+            botoes[2].classList.add('ativo');
+        }
+
+    }
+
+
+    /* ==========================================================
+       CARREGAR STATUS DA MOLDACAO
+    ========================================================== */
+
+    function carregarStatusMoldacao() {
+
+        const ops = [
+            '7040-26',
+            '6963-26H',
+            '7039-26C2'
+        ];
+
+
+        ops.forEach(function(op) {
+
+            const status =
+                localStorage.getItem(
+                    'moldacao_' + op
+                ) || 'nao';
+
+
+            atualizarStatusVisual(
+                op,
+                status
+            );
+
+        });
+
+    }
+
+
+    /* ==========================================================
+       PESQUISA
+    ========================================================== */
+
+    function pesquisarPeca() {
+
+        const pesquisa =
+            document.getElementById(
+                'pesquisa'
+            )
+            .value
+            .toLowerCase()
+            .trim();
+
+
+        const cards =
+            document.querySelectorAll(
+                '.peca-card'
+            );
+
+
+        let encontrou = false;
+
+
+        cards.forEach(function(card) {
+
+            const op =
+                card.dataset.op
+                .toLowerCase();
+
+            const totvs =
+                card.dataset.totvs
+                .toLowerCase();
+
+            const peca =
+                card.dataset.peca
+                .toLowerCase();
+
+
+            if (
+                op.includes(pesquisa) ||
+                totvs.includes(pesquisa) ||
+                peca.includes(pesquisa)
+            ) {
+
+                card.style.display =
+                    'block';
+
+                encontrou = true;
+
+            }
+
+            else {
+
+                card.style.display =
+                    'none';
+
+            }
+
+        });
+
+
+        const semResultados =
+            document.getElementById(
+                'sem-resultados'
+            );
+
+
+        if (!encontrou) {
+
+            semResultados.style.display =
+                'block';
+
+        }
+
+        else {
+
+            semResultados.style.display =
+                'none';
+
+        }
+
+    }
+
+
+    /* ==========================================================
+       ABRIR MODELO 3D
+    ========================================================== */
+
+    function abrirModelo3D(
+        codigo,
+        codigoTotvs,
+        op,
+        peca,
+        material
+    ) {
+
+        const modal =
+            document.getElementById(
+                'modal3D'
+            );
+
+
+        const visualizador =
+            document.getElementById(
+                'visualizador'
+            );
+
+
+        document.getElementById(
+            'tituloModelo'
+        ).innerText =
+            'Modelo 3D - ' + codigo;
+
+
+        document.getElementById(
+            'modalCodigoTotvs'
+        ).innerText =
+            codigoTotvs;
+
+
+        document.getElementById(
+            'modalOP'
+        ).innerText =
+            op;
+
+
+        document.getElementById(
+            'modalPeca'
+        ).innerText =
+            peca;
+
+
+        document.getElementById(
+            'modalMaterial'
+        ).innerText =
+            material;
+
+
+        /*
+            IMPORTANTE:
+
+            Os arquivos GLB devem estar
+            dentro da pasta:
+
+            modelos/
+
+            Exemplo:
+
+            modelos/7040-26.glb
+            modelos/6963-26H.glb
+            modelos/7039-26C2.glb
+        */
+
+        visualizador.src =
+            'modelos/' +
+            codigo +
+            '.glb';
+
+
+        modal.classList.add(
+            'aberto'
+        );
+
+    }
+
+
+    /* ==========================================================
+       FECHAR MODELO 3D
+    ========================================================== */
+
+    function fecharModelo3D() {
+
+        const modal =
+            document.getElementById(
+                'modal3D'
+            );
+
+
+        const visualizador =
+            document.getElementById(
+                'visualizador'
+            );
+
+
+        modal.classList.remove(
+            'aberto'
+        );
+
+
+        visualizador.src = '';
+
+    }
+
+
+    /* ==========================================================
+       FECHAR MODAL CLICANDO FORA
+    ========================================================== */
+
+    document.getElementById(
+        'modal3D'
+    ).addEventListener(
+        'click',
+        function(event) {
+
+            if (
+                event.target === this
+            ) {
+
+                fecharModelo3D();
+
+            }
+
+        }
+    );
+
+
+    /* ==========================================================
+       ESC PARA FECHAR
+    ========================================================== */
+
+    document.addEventListener(
+        'keydown',
+        function(event) {
+
+            if (
+                event.key === 'Escape'
+            ) {
+
+                fecharModelo3D();
+
+            }
+
+        }
+    );
+
+
+    /* ==========================================================
+       INICIALIZAÇÃO
+    ========================================================== */
+
+    carregarCorridas();
+
+    carregarStatusMoldacao();
+
+</script>
+
+</body>
+</html>
+```
