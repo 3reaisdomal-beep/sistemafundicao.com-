@@ -493,10 +493,221 @@
             color: #fff;
         }
 
+        /* =========================
+           VISUALIZADOR 3D
+        ========================= */
+
+        .area-modelo-3d {
+            position: relative;
+            height: calc(100% - 115px);
+            min-height: 420px;
+            background: #111827;
+        }
+
         model-viewer {
             width: 100%;
-            height: calc(100% - 115px);
+            height: 100%;
+            background: linear-gradient(135deg, #111827, #1f2937);
+        }
+
+        .controles-3d {
+            position: absolute;
+            left: 50%;
+            bottom: 15px;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 5;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .controle-3d {
+            border: 1px solid #555;
+            background: rgba(20,20,20,.9);
+            color: #fff;
+            border-radius: 8px;
+            padding: 9px 13px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .controle-3d:hover {
+            background: #ff7a00;
+        }
+
+        .aviso-modelo {
+            display: none;
+            position: absolute;
+            inset: 0;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 30px;
+            color: #fff;
+            background: rgba(17,24,39,.96);
+            z-index: 4;
+        }
+
+        .aviso-modelo.mostrar {
+            display: flex;
+        }
+
+
+        /* =========================
+           FUSAO / CORRECAO QUIMICA
+        ========================= */
+
+        .fusaotopo {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .fusaotopo h2 {
+            color: #ff7a00;
+            font-size: 25px;
+        }
+
+        .fusaotopo p {
+            color: #aaa;
+            margin-top: 5px;
+        }
+
+        .painel-fusao {
+            background: #181818;
+            border: 1px solid #333;
+            border-top: 5px solid #ff7a00;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 18px rgba(0,0,0,0.35);
+        }
+
+        .painel-fusao h3 {
+            color: #ff7a00;
+            margin-bottom: 16px;
+            font-size: 20px;
+        }
+
+        .grid-fusao {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+        }
+
+        .campo-fusao {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .campo-fusao label {
+            color: #bbb;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .campo-fusao input,
+        .campo-fusao select {
+            width: 100%;
+            background: #101010;
+            color: #fff;
+            border: 1px solid #444;
+            border-radius: 8px;
+            padding: 12px;
+            outline: none;
+            font-size: 15px;
+        }
+
+        .campo-fusao input:focus,
+        .campo-fusao select:focus {
+            border-color: #ff7a00;
+        }
+
+        .resultado-correcao {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 18px;
+        }
+
+        .resultado-box {
+            background: #101010;
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .resultado-box span {
+            display: block;
+            color: #aaa;
+            font-size: 13px;
+            margin-bottom: 7px;
+        }
+
+        .resultado-box strong {
+            color: #ff7a00;
+            font-size: 23px;
+        }
+
+        .resultado-destaque {
+            border-color: #ff7a00;
+        }
+
+        .resultado-destaque strong {
+            color: #fff;
+        }
+
+        .botoes-fusao {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 18px;
+        }
+
+        .btn-calcular {
+            background: #ff7a00;
+            color: #111;
+        }
+
+        .btn-limpar {
+            background: #333;
+            color: #fff;
+            border: 1px solid #555;
+        }
+
+        .mensagem-correcao {
+            display: none;
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
             background: #222;
+            border-left: 4px solid #ff7a00;
+            color: #ddd;
+        }
+
+        .tabela-correcoes {
+            width: 100%;
+            min-width: 700px;
+        }
+
+        .tabela-correcoes th {
+            background: #ff7a00;
+        }
+
+        @media (max-width: 900px) {
+            .grid-fusao {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .resultado-correcao {
+                grid-template-columns: 1fr;
+            }
         }
 
         /* =========================
@@ -541,6 +752,19 @@
             .modal-conteudo {
                 height: 95vh;
             }
+
+            .area-modelo-3d {
+                min-height: 360px;
+            }
+
+            .controles-3d {
+                bottom: 8px;
+            }
+
+            .controle-3d {
+                padding: 8px 10px;
+                font-size: 12px;
+            }
         }
     </style>
 </head>
@@ -548,8 +772,8 @@
 <body>
 
 <header>
-    <h1>🔥 PROGRAMAÇÃO DA FUNDIÇÃO</h1>
-    <p>Controle de produção e moldação</p>
+    <h1 PROGRAMAÇÃO DA FUNDIÇÃO</h1>
+    <p>CONTROLE DE PRODUÇÃO E MOLDAÇÃO</p>
 </header>
 
 
@@ -565,6 +789,10 @@
 
     <button class="aba" onclick="mostrarAba('moldacao', this)">
         🧊 Moldação
+    </button>
+
+    <button class="aba" onclick="mostrarAba('fusao', this)">
+        🔥 Fusão
     </button>
 
 </div>
@@ -678,9 +906,7 @@
 
         <div class="acoes">
 
-            <button class="btn btn-abrir"
-                    onclick="abrirCorrida('01')">
-                🔓 ABRIR
+        
             </button>
 
             <button class="btn btn-iniciar"
@@ -810,10 +1036,6 @@
 
         <div class="acoes">
 
-            <button class="btn btn-abrir"
-                    onclick="abrirCorrida('02')">
-                🔓 ABRIR
-            </button>
 
             <button class="btn btn-iniciar"
                     onclick="iniciarCorrida('02')">
@@ -1098,6 +1320,115 @@
 </section>
 
 
+
+<!-- ==========================================================
+     ABA FUSAO
+========================================================== -->
+
+<section id="fusao" class="conteudo-aba">
+
+    <div class="fusaotopo">
+        <div>
+            <h2>🔥 CORREÇÃO QUÍMICA</h2>
+            <p>Calcule e registre as correções químicas realizadas na fusão.</p>
+        </div>
+    </div>
+
+    <div class="painel-fusao">
+        <h3>Correção química</h3>
+
+        <div class="grid-fusao">
+            <div class="campo-fusao">
+                <label for="corr-elemento">Elemento</label>
+                <select id="corr-elemento">
+                    <option value="C">C</option>
+                    <option value="Si">Si</option>
+                    <option value="Mn">Mn</option>
+                    <option value="Cr">Cr</option>
+                    <option value="Mo">Mo</option>
+                    <option value="Ni">Ni</option>
+                    <option value="Cu">Cu</option>
+                    <option value="Ti">Ti</option>
+                    <option value="Al">Al</option>
+                    <option value="Fe">Fe</option>
+                </select>
+            </div>
+
+            <div class="campo-fusao">
+                <label for="corr-atual">Análise atual (%)</label>
+                <input id="corr-atual" type="number" step="0.001" min="0" placeholder="Ex.: 0.42">
+            </div>
+
+            <div class="campo-fusao">
+                <label for="corr-alvo">Teor alvo (%)</label>
+                <input id="corr-alvo" type="number" step="0.001" min="0" placeholder="Ex.: 0.48">
+            </div>
+
+            <div class="campo-fusao">
+                <label for="corr-liga">Teor do elemento na liga (%)</label>
+                <input id="corr-liga" type="number" step="0.001" min="0" placeholder="Ex.: 75 para FeSi 75%">
+            </div>
+        </div>
+
+        <div class="grid-fusao" style="margin-top:14px;">
+            <div class="campo-fusao">
+                <label for="corr-rendimento">Rendimento da adição (%)</label>
+                <input id="corr-rendimento" type="number" step="0.1" min="0.1" max="100" value="100">
+            </div>
+        </div>
+
+        <div class="botoes-fusao">
+            <button class="btn btn-calcular" onclick="calcularCorrecao()">🧮 CALCULAR CORREÇÃO</button>
+            <button class="btn btn-limpar" onclick="limparCorrecao()">🧹 LIMPAR</button>
+            <button class="btn btn-modelo" onclick="adicionarCorrecao()">➕ REGISTRAR CORREÇÃO</button>
+        </div>
+
+        <div id="mensagem-correcao" class="mensagem-correcao"></div>
+
+        <div class="resultado-correcao">
+            <div class="resultado-box">
+                <span>Diferença a corrigir</span>
+                <strong id="resultado-diferenca">0,000 %</strong>
+            </div>
+
+            <div class="resultado-box">
+                <span>Elemento necessário</span>
+                <strong id="resultado-elemento">0,000 kg</strong>
+            </div>
+
+            <div class="resultado-box resultado-destaque">
+                <span>Quantidade de liga a adicionar</span>
+                <strong id="resultado-liga">0,000 kg</strong>
+            </div>
+        </div>
+    </div>
+
+    <div class="painel-fusao">
+        <h3>2. Histórico de correções</h3>
+
+        <div class="tabela-container">
+            <table class="tabela-correcoes">
+                <thead>
+                    <tr>
+                        <th>ELEMENTO</th>
+                        <th>ATUAL</th>
+                        <th>ALVO</th>
+                        <th>LIGA</th>
+                        <th>QUANTIDADE</th>
+                        <th>HORÁRIO</th>
+                    </tr>
+                </thead>
+                <tbody id="historico-correcoes">
+                    <tr>
+                        <td colspan="6">Nenhuma correção registrada.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+
 <!-- ==========================================================
      MODAL DO MODELO 3D
 ========================================================== -->
@@ -1146,15 +1477,40 @@
         </div>
 
 
-        <model-viewer
-            id="visualizador"
-            camera-controls
-            auto-rotate
-            shadow-intensity="1"
-            exposure="1"
-            environment-image="neutral"
-            interaction-prompt="auto">
-        </model-viewer>
+        <div class="area-modelo-3d">
+
+            <model-viewer
+                id="visualizador"
+                camera-controls
+                auto-rotate
+                rotation-per-second="20deg"
+                shadow-intensity="1.2"
+                exposure="1"
+                environment-image="neutral"
+                interaction-prompt="auto"
+                camera-orbit="35deg 70deg 105%"
+                min-camera-orbit="auto auto 70%"
+                max-camera-orbit="auto auto 250%"
+                alt="Modelo 3D da Mandíbula Fixa">
+            </model-viewer>
+
+            <div id="avisoModelo" class="aviso-modelo">
+                <div>
+                    <div style="font-size:42px; margin-bottom:10px;">🧱</div>
+                    <strong style="font-size:20px;">Modelo 3D não encontrado</strong>
+                    <p style="color:#aaa;">
+                        Coloque o arquivo <b>mandibula_fixa.glb</b> dentro da pasta <b>modelos</b>.
+                    </p>
+                </div>
+            </div>
+
+            <div class="controles-3d">
+                <button class="controle-3d" onclick="girarModelo()">🔄 Girar</button>
+                <button class="controle-3d" onclick="resetarModelo()">⟳ Reiniciar</button>
+                <button class="controle-3d" onclick="telaCheiaModelo()">⛶ Tela cheia</button>
+            </div>
+
+        </div>
 
     </div>
 
@@ -1815,30 +2171,63 @@
 
 
         /*
-            IMPORTANTE:
+            MODELO ATUAL DA MOLDAÇÃO
 
-            Os arquivos GLB devem estar
-            dentro da pasta:
+            Todas as peças cadastradas como Mandíbula fixa
+            usam o mesmo arquivo 3D por enquanto:
 
-            modelos/
+            modelos/mandibula_fixa.glb
 
-            Exemplo:
-
-            modelos/7040-26.glb
-            modelos/6963-26H.glb
-            modelos/7039-26C2.glb
+            Depois podemos cadastrar um GLB diferente para
+            cada Código TOTVS, sem mudar o restante do app.
         */
 
-        visualizador.src =
-            'modelos/' +
-            codigo +
-            '.glb';
+        const aviso = document.getElementById('avisoModelo');
+        aviso.classList.remove('mostrar');
+
+        visualizador.src = 'modelos/mandibula_fixa.glb';
+
+        visualizador.addEventListener('error', function erroModelo() {
+            aviso.classList.add('mostrar');
+            visualizador.removeEventListener('error', erroModelo);
+        });
+
+        modal.classList.add('aberto');
+
+        // Aguarda o carregamento para ajustar a câmera.
+        visualizador.addEventListener('load', function carregarModelo() {
+            resetarModelo();
+            visualizador.removeEventListener('load', carregarModelo);
+        });
+
+    }
 
 
-        modal.classList.add(
-            'aberto'
-        );
+    /* ==========================================================
+       CONTROLES DO MODELO 3D
+    ========================================================== */
 
+    function girarModelo() {
+        const visualizador = document.getElementById('visualizador');
+        visualizador.autoRotate = !visualizador.autoRotate;
+    }
+
+    function resetarModelo() {
+        const visualizador = document.getElementById('visualizador');
+        if (typeof visualizador.resetTurntableRotation === 'function') {
+            visualizador.resetTurntableRotation();
+        }
+        visualizador.cameraOrbit = '35deg 70deg 105%';
+        visualizador.fieldOfView = '30deg';
+    }
+
+    async function telaCheiaModelo() {
+        const area = document.querySelector('.area-modelo-3d');
+        if (!document.fullscreenElement) {
+            await area.requestFullscreen();
+        } else {
+            await document.exitFullscreen();
+        }
     }
 
 
@@ -1912,6 +2301,203 @@
     );
 
 
+
+    /* ==========================================================
+       FUSAO - CONTROLE E CORRECAO QUIMICA
+    ========================================================== */
+
+    function calcularCorrecao() {
+        const atual = Number(document.getElementById('corr-atual').value);
+        const alvo = Number(document.getElementById('corr-alvo').value);
+        const teorLiga = Number(document.getElementById('corr-liga').value);
+        const rendimento = Number(document.getElementById('corr-rendimento').value);
+
+
+        if (!(atual >= 0) || !(alvo >= 0)) {
+            alert('Informe a análise atual e o teor alvo.');
+            return null;
+        }
+
+        if (!(teorLiga > 0)) {
+            alert('Informe o teor do elemento na liga.');
+            return null;
+        }
+
+        if (!(rendimento > 0 && rendimento <= 100)) {
+            alert('O rendimento deve estar entre 0,1% e 100%.');
+            return null;
+        }
+
+        const diferenca = alvo - atual;
+
+        if (diferenca <= 0) {
+            document.getElementById('resultado-diferenca').innerText =
+                formatarNumero(diferenca, 3) + ' %';
+            document.getElementById('resultado-elemento').innerText = '0,000 kg';
+            document.getElementById('resultado-liga').innerText = '0,000 kg';
+
+            mostrarMensagem(
+                'A análise atual já está igual ou acima do alvo. Não foi calculada adição para elevar esse elemento.',
+                false
+            );
+
+            return {
+                peso,
+                atual,
+                alvo,
+                teorLiga,
+                rendimento,
+                diferenca,
+                elementoKg: 0,
+                ligaKg: 0
+            };
+        }
+
+        /*
+           Fórmula simplificada para uma correção de liga:
+
+           elemento necessário = peso do banho x diferença / 100
+
+           quantidade da liga =
+           elemento necessário / (teor da liga / 100 x rendimento)
+
+           ATENÇÃO:
+           O resultado é uma estimativa de adição. Perdas específicas
+           do processo, composição completa do banho e interação entre
+           elementos devem ser consideradas na correção metalúrgica real.
+        */
+
+        /*
+           Como o peso do banho foi retirado desta tela, o sistema
+           calcula a proporção de liga necessária para corrigir o teor.
+           O peso real da adição pode ser aplicado posteriormente quando
+           o peso da corrida vier automaticamente do sistema/MySQL.
+        */
+        const proporcaoLiga =
+            (diferenca / teorLiga) * (100 / (rendimento / 100));
+
+        const elementoKg = diferenca;
+        const ligaKg = proporcaoLiga;
+
+        document.getElementById('resultado-diferenca').innerText =
+            formatarNumero(diferenca, 3) + ' %';
+
+        document.getElementById('resultado-elemento').innerText =
+            formatarNumero(elementoKg, 3) + ' kg';
+
+        document.getElementById('resultado-liga').innerText =
+            formatarNumero(ligaKg, 3) + ' kg';
+
+        const elemento = document.getElementById('corr-elemento').value;
+
+        mostrarMensagem(
+            'Para elevar ' + elemento +
+            ' de ' + formatarNumero(atual, 3) +
+            '% para ' + formatarNumero(alvo, 3) +
+            '%, a proporção calculada de liga é ' +
+            formatarNumero(ligaKg, 3) +
+            '%.',
+            true
+        );
+
+        return {
+            atual,
+            alvo,
+            teorLiga,
+            rendimento,
+            diferenca,
+            elementoKg,
+            ligaKg
+        };
+    }
+
+    function mostrarMensagem(texto, sucesso) {
+        const mensagem = document.getElementById('mensagem-correcao');
+        mensagem.innerText = texto;
+        mensagem.style.display = 'block';
+        mensagem.style.borderLeftColor = sucesso ? '#16833c' : '#a82b2b';
+    }
+
+    function limparCorrecao() {
+        document.getElementById('corr-atual').value = '';
+        document.getElementById('corr-alvo').value = '';
+        document.getElementById('corr-liga').value = '';
+        document.getElementById('corr-rendimento').value = '100';
+
+        document.getElementById('resultado-diferenca').innerText = '0,000 %';
+        document.getElementById('resultado-elemento').innerText = '0,000 kg';
+        document.getElementById('resultado-liga').innerText = '0,000 kg';
+        document.getElementById('mensagem-correcao').style.display = 'none';
+    }
+
+    function adicionarCorrecao() {
+        const resultado = calcularCorrecao();
+
+        if (!resultado) {
+            return;
+        }
+
+        const elemento = document.getElementById('corr-elemento').value;
+        const chave = 'correcoes_quimicas';
+
+        let historico = JSON.parse(
+            localStorage.getItem(chave) || '[]'
+        );
+
+        historico.push({
+            elemento: elemento,
+            atual: resultado.atual,
+            alvo: resultado.alvo,
+            liga: resultado.teorLiga,
+            quantidade: resultado.ligaKg,
+            hora: pegarHora()
+        });
+
+        localStorage.setItem(
+            chave,
+            JSON.stringify(historico)
+        );
+
+        carregarHistoricoFusao();
+
+        alert(
+            'Correção registrada: ' +
+            formatarNumero(resultado.ligaKg, 3) +
+            ' kg de liga.'
+        );
+    }
+
+    function carregarHistoricoFusao() {
+        const historico = JSON.parse(
+            localStorage.getItem('correcoes_quimicas') || '[]'
+        );
+
+        const tbody = document.getElementById('historico-correcoes');
+
+        if (!historico.length) {
+            tbody.innerHTML =
+                '<tr><td colspan="6">Nenhuma correção registrada.</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = '';
+
+        historico.forEach(function(item) {
+            const tr = document.createElement('tr');
+
+            tr.innerHTML =
+                '<td>' + item.elemento + '</td>' +
+                '<td>' + formatarNumero(item.atual, 3) + '%</td>' +
+                '<td>' + formatarNumero(item.alvo, 3) + '%</td>' +
+                '<td>' + formatarNumero(item.liga, 2) + '%</td>' +
+                '<td>' + formatarNumero(item.quantidade, 3) + ' kg</td>' +
+                '<td>' + formatarHorario(item.hora) + '</td>';
+
+            tbody.appendChild(tr);
+        });
+    }
+
+
     /* ==========================================================
        INICIALIZAÇÃO
     ========================================================== */
@@ -1919,6 +2505,7 @@
     carregarCorridas();
 
     carregarStatusMoldacao();
+    carregarHistoricoFusao();
 
 </script>
 
